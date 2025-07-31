@@ -21,33 +21,54 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'signup':
-        return <Signup goTo={() => setCurrentPage('login')} />; // Go to Login after signup
+        return <Signup goTo={() => setCurrentPage('login')} />;
       case 'login':
-        return <Login goTo={() => setCurrentPage('movieListings')} />; // Go to Movie Listings after login
+        return <Login goTo={() => setCurrentPage('movieListings')} />;
       case 'movieListings':
-        return <MovieListings onSelectMovie={setSelectedMovie} goTo={handlePageChange} />;
+        console.log('Rendering MovieListings');
+        return (
+          <MovieListings
+            onSelectMovie={setSelectedMovie}
+            goTo={handlePageChange}
+          />
+        );
       case 'seatSelection':
-        return <SeatSelection movie={selectedMovie} goTo={handlePageChange} />;
+        return (
+          <SeatSelection
+            movie={selectedMovie}
+            goTo={handlePageChange}
+          />
+        );
       case 'ticketConfirmation':
-        return <TicketConfirmation movie={selectedMovie} selectedSeats={selectedSeats} goTo={handlePageChange} />;
+        return (
+          <TicketConfirmation
+            movie={selectedMovie}
+            selectedSeats={selectedSeats}
+            goTo={handlePageChange}
+          />
+        );
       case 'userReview':
         return <UserReview goTo={handlePageChange} />;
       case 'userAccount':
         return <UserAccount goTo={handlePageChange} />;
       default:
-        return <Signup goTo={() => setCurrentPage('login')} />; // Default to signup if no valid page
+        return <Signup goTo={() => setCurrentPage('login')} />;
     }
   };
+
+  const showNav = currentPage !== 'signup' && currentPage !== 'login';
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Online Movie Ticket Booking</h1>
-        <nav>
-          <button onClick={() => setCurrentPage('movieListings')}>Movies</button>
-          <button onClick={() => setCurrentPage('userReview')}>Reviews</button>
-          <button onClick={() => setCurrentPage('userAccount')}>Account</button>
-        </nav>
+        {showNav && (
+          <nav>
+            <button onClick={() => setCurrentPage('movieListings')}>Movies</button>
+            <button onClick={() => setCurrentPage('userReview')}>Reviews</button>
+            <button onClick={() => setCurrentPage('userAccount')}>Account</button>
+          </nav>
+        )}
       </header>
       <main>
         {renderPage()}
@@ -57,7 +78,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
