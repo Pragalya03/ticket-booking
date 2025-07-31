@@ -10,7 +10,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS-specific
+# OS-specific files
 .DS_Store
 Thumbs.db
 
@@ -26,3 +26,6 @@ coverage/
 
 # Local JSON server data (optional)
 *.local.json
+
+# Ignore package-lock.json from parent folder if accidentally placed
+../package-lock.json
