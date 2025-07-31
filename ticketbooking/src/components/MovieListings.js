@@ -7,7 +7,6 @@ function MovieListings({ onSelectMovie, goTo }) {
   const [newMovie, setNewMovie] = useState({ title: '', image: '', showtimes: [] });
   const [editingMovie, setEditingMovie] = useState(null);
 
-  // Fetch movies on mount
   useEffect(() => {
     axios.get('http://localhost:8081/movies')
       .then(response => {
@@ -18,7 +17,6 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   }, []);
 
-  // Add movie
   const addMovie = () => {
     axios.post('http://localhost:8081/movies', newMovie)
       .then(response => {
@@ -30,24 +28,22 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   };
 
-  // Update movie
   const updateMovie = () => {
-    if (!editingMovie || !editingMovie.id) return;
-
-    axios.put(`http://localhost:8081/movies/${editingMovie.id}`, editingMovie)
-      .then(response => {
-        const updatedMovies = movies.map(movie =>
-          movie.id === editingMovie.id ? response.data : movie
-        );
-        setMovies(updatedMovies);
-        setEditingMovie(null);
-      })
-      .catch(error => {
-        console.error("Error updating the movie", error);
-      });
+    if (editingMovie) {
+      axios.put(`http://localhost:8081/movies/${editingMovie.id}`, editingMovie)
+        .then(response => {
+          const updatedMovies = movies.map(movie =>
+            movie.id === editingMovie.id ? response.data : movie
+          );
+          setMovies(updatedMovies);
+          setEditingMovie(null);
+        })
+        .catch(error => {
+          console.error("Error updating the movie", error);
+        });
+    }
   };
 
-  // Delete movie
   const deleteMovie = (movieId) => {
     axios.delete(`http://localhost:8081/movies/${movieId}`)
       .then(() => {
@@ -58,17 +54,18 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   };
 
-  // Select movie for seat selection
   const handleSelectMovie = (movie) => {
     onSelectMovie(movie);
     goTo('seatSelection');
   };
 
+  console.log("Editing movie state:", editingMovie);
+
   return (
     <div className="movie-listings">
       <h2>Available Movies</h2>
 
-      {/* Add Movie */}
+      {/* Add Movie Form */}
       <div className="add-movie-form">
         <h3>Add a New Movie</h3>
         <input
@@ -94,14 +91,14 @@ function MovieListings({ onSelectMovie, goTo }) {
         <button onClick={addMovie}>Add Movie</button>
       </div>
 
-      {/* Edit Movie */}
+      {/* Edit Movie Form */}
       {editingMovie && (
         <div className="edit-movie-form">
           <h3>Edit Movie</h3>
           <input
             type="text"
             placeholder="Title"
-            value={editingMovie.title || ""}
+            value={editingMovie.title}
             onChange={(e) =>
               setEditingMovie({ ...editingMovie, title: e.target.value })
             }
@@ -109,7 +106,7 @@ function MovieListings({ onSelectMovie, goTo }) {
           <input
             type="text"
             placeholder="Image URL"
-            value={editingMovie.image || ""}
+            value={editingMovie.image}
             onChange={(e) =>
               setEditingMovie({ ...editingMovie, image: e.target.value })
             }
@@ -117,11 +114,7 @@ function MovieListings({ onSelectMovie, goTo }) {
           <input
             type="text"
             placeholder="Showtimes (comma separated)"
-            value={
-              Array.isArray(editingMovie.showtimes)
-                ? editingMovie.showtimes.join(',')
-                : ''
-            }
+            value={Array.isArray(editingMovie.showtimes) ? editingMovie.showtimes.join(',') : ''}
             onChange={(e) =>
               setEditingMovie({
                 ...editingMovie,
@@ -134,7 +127,6 @@ function MovieListings({ onSelectMovie, goTo }) {
         </div>
       )}
 
-      {/* Movie Cards */}
       <div className="movie-cards">
         {movies.map(movie => (
           <div key={movie.id} className="movie-card">
@@ -149,9 +141,7 @@ function MovieListings({ onSelectMovie, goTo }) {
             <button onClick={() => {
               console.log("Edit clicked:", movie);
               setEditingMovie({ ...movie });
-            }}>
-              Edit
-            </button>
+            }}>Edit</button>
             <button onClick={() => deleteMovie(movie.id)}>Delete</button>
           </div>
         ))}
