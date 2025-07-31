@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/ticketbooknig/static/css/main.c8a5f7d8.css",
+    "main.js": "/ticketbooknig/static/js/main.87c84bf2.js",
+    "index.html": "/ticketbooknig/index.html",
+    "main.c8a5f7d8.css.map": "/ticketbooknig/static/css/main.c8a5f7d8.css.map",
+    "main.87c84bf2.js.map": "/ticketbooknig/static/js/main.87c84bf2.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c8a5f7d8.css",
+    "static/js/main.87c84bf2.js"
+  ]
+}
