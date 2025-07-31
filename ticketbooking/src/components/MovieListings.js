@@ -7,8 +7,9 @@ function MovieListings({ onSelectMovie, goTo }) {
   const [newMovie, setNewMovie] = useState({ title: '', image: '', showtimes: [] });
   const [editingMovie, setEditingMovie] = useState(null);
 
+  // Fetch movies on mount
   useEffect(() => {
-    axios.get('http://127.0.0.1:8081/movies')
+    axios.get('http://localhost:8081/movies')
       .then(response => {
         setMovies(response.data);
       })
@@ -17,8 +18,9 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   }, []);
 
+  // Add movie
   const addMovie = () => {
-    axios.post('http://127.0.0.1:8081/movies', newMovie)
+    axios.post('http://localhost:8081/movies', newMovie)
       .then(response => {
         setMovies([...movies, response.data]);
         setNewMovie({ title: '', image: '', showtimes: [] });
@@ -28,24 +30,26 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   };
 
+  // Update movie
   const updateMovie = () => {
-    if (editingMovie) {
-      axios.put(`http://127.0.0.1:8081/movies/${editingMovie.id}`, editingMovie)
-        .then(response => {
-          const updatedMovies = movies.map(movie =>
-            movie.id === editingMovie.id ? response.data : movie
-          );
-          setMovies(updatedMovies);
-          setEditingMovie(null);
-        })
-        .catch(error => {
-          console.error("Error updating the movie", error);
-        });
-    }
+    if (!editingMovie || !editingMovie.id) return;
+
+    axios.put(`http://localhost:8081/movies/${editingMovie.id}`, editingMovie)
+      .then(response => {
+        const updatedMovies = movies.map(movie =>
+          movie.id === editingMovie.id ? response.data : movie
+        );
+        setMovies(updatedMovies);
+        setEditingMovie(null);
+      })
+      .catch(error => {
+        console.error("Error updating the movie", error);
+      });
   };
 
+  // Delete movie
   const deleteMovie = (movieId) => {
-    axios.delete(`http://127.0.0.1:8081/movies/${movieId}`)
+    axios.delete(`http://localhost:8081/movies/${movieId}`)
       .then(() => {
         setMovies(movies.filter(movie => movie.id !== movieId));
       })
@@ -54,6 +58,7 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   };
 
+  // Select movie for seat selection
   const handleSelectMovie = (movie) => {
     onSelectMovie(movie);
     goTo('seatSelection');
@@ -63,6 +68,7 @@ function MovieListings({ onSelectMovie, goTo }) {
     <div className="movie-listings">
       <h2>Available Movies</h2>
 
+      {/* Add Movie */}
       <div className="add-movie-form">
         <h3>Add a New Movie</h3>
         <input
@@ -81,36 +87,54 @@ function MovieListings({ onSelectMovie, goTo }) {
           type="text"
           placeholder="Showtimes (comma separated)"
           value={newMovie.showtimes.join(',')}
-          onChange={(e) => setNewMovie({ ...newMovie, showtimes: e.target.value.split(',') })}
+          onChange={(e) =>
+            setNewMovie({ ...newMovie, showtimes: e.target.value.split(',').map(s => s.trim()) })
+          }
         />
         <button onClick={addMovie}>Add Movie</button>
       </div>
 
+      {/* Edit Movie */}
       {editingMovie && (
         <div className="edit-movie-form">
           <h3>Edit Movie</h3>
           <input
             type="text"
             placeholder="Title"
-            value={editingMovie.title}
-            onChange={(e) => setEditingMovie({ ...editingMovie, title: e.target.value })}
+            value={editingMovie.title || ""}
+            onChange={(e) =>
+              setEditingMovie({ ...editingMovie, title: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="Image URL"
-            value={editingMovie.image}
-            onChange={(e) => setEditingMovie({ ...editingMovie, image: e.target.value })}
+            value={editingMovie.image || ""}
+            onChange={(e) =>
+              setEditingMovie({ ...editingMovie, image: e.target.value })
+            }
           />
           <input
             type="text"
             placeholder="Showtimes (comma separated)"
-            value={editingMovie.showtimes.join(',')}
-            onChange={(e) => setEditingMovie({ ...editingMovie, showtimes: e.target.value.split(',') })}
+            value={
+              Array.isArray(editingMovie.showtimes)
+                ? editingMovie.showtimes.join(',')
+                : ''
+            }
+            onChange={(e) =>
+              setEditingMovie({
+                ...editingMovie,
+                showtimes: e.target.value.split(',').map(s => s.trim()),
+              })
+            }
           />
           <button onClick={updateMovie}>Update Movie</button>
+          <button onClick={() => setEditingMovie(null)}>Cancel</button>
         </div>
       )}
 
+      {/* Movie Cards */}
       <div className="movie-cards">
         {movies.map(movie => (
           <div key={movie.id} className="movie-card">
@@ -122,7 +146,12 @@ function MovieListings({ onSelectMovie, goTo }) {
               ))}
             </div>
             <button onClick={() => handleSelectMovie(movie)}>Select</button>
-            <button onClick={() => setEditingMovie(movie)}>Edit</button>
+            <button onClick={() => {
+              console.log("Edit clicked:", movie);
+              setEditingMovie({ ...movie });
+            }}>
+              Edit
+            </button>
             <button onClick={() => deleteMovie(movie.id)}>Delete</button>
           </div>
         ))}
