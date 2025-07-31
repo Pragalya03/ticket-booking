@@ -7,20 +7,18 @@ function MovieListings({ onSelectMovie, goTo }) {
   const [newMovie, setNewMovie] = useState({ title: '', image: '', showtimes: [] });
   const [editingMovie, setEditingMovie] = useState(null);
 
-  
   useEffect(() => {
-    axios.get('http://localhost:8081/movies') 
+    axios.get('http://127.0.0.1:8081/movies')
       .then(response => {
-        setMovies(response.data); 
+        setMovies(response.data);
       })
       .catch(error => {
         console.error("Error fetching the movie data", error);
       });
   }, []);
 
-  
   const addMovie = () => {
-    axios.post('http://localhost:8081/movies', newMovie)
+    axios.post('http://127.0.0.1:8081/movies', newMovie)
       .then(response => {
         setMovies([...movies, response.data]);
         setNewMovie({ title: '', image: '', showtimes: [] });
@@ -30,16 +28,15 @@ function MovieListings({ onSelectMovie, goTo }) {
       });
   };
 
-  
   const updateMovie = () => {
     if (editingMovie) {
-      axios.put(`http://localhost:8081/movies/${editingMovie.id}`, editingMovie)
+      axios.put(`http://127.0.0.1:8081/movies/${editingMovie.id}`, editingMovie)
         .then(response => {
-          const updatedMovies = movies.map(movie => 
+          const updatedMovies = movies.map(movie =>
             movie.id === editingMovie.id ? response.data : movie
           );
           setMovies(updatedMovies);
-          setEditingMovie(null); // Clear the editing state
+          setEditingMovie(null);
         })
         .catch(error => {
           console.error("Error updating the movie", error);
@@ -47,9 +44,8 @@ function MovieListings({ onSelectMovie, goTo }) {
     }
   };
 
-  // Handle deleting a movie (DELETE method)
   const deleteMovie = (movieId) => {
-    axios.delete(`http://localhost:8081/movies/${movieId}`)
+    axios.delete(`http://127.0.0.1:8081/movies/${movieId}`)
       .then(() => {
         setMovies(movies.filter(movie => movie.id !== movieId));
       })
@@ -60,14 +56,13 @@ function MovieListings({ onSelectMovie, goTo }) {
 
   const handleSelectMovie = (movie) => {
     onSelectMovie(movie);
-    goTo('seatSelection'); 
+    goTo('seatSelection');
   };
 
   return (
     <div className="movie-listings">
       <h2>Available Movies</h2>
 
-      {/* Add Movie Form */}
       <div className="add-movie-form">
         <h3>Add a New Movie</h3>
         <input
@@ -91,7 +86,6 @@ function MovieListings({ onSelectMovie, goTo }) {
         <button onClick={addMovie}>Add Movie</button>
       </div>
 
-      {/* Edit Movie Form */}
       {editingMovie && (
         <div className="edit-movie-form">
           <h3>Edit Movie</h3>
@@ -138,4 +132,3 @@ function MovieListings({ onSelectMovie, goTo }) {
 }
 
 export default MovieListings;
-
