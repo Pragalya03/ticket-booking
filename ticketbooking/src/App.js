@@ -9,29 +9,38 @@ import Login from './components/Login';
 import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('signup'); // Start with 'signup' page
+  const [currentPage, setCurrentPage] = useState('signup');
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
 
-  const handlePageChange = (page, seats = []) => {
+  const handlePageChange = (page, seats = [], movie = null) => {
+    if (movie !== null) setSelectedMovie(movie);
     setSelectedSeats(seats);
     setCurrentPage(page);
   };
 
   const renderPage = () => {
+    console.log('Current Page:', currentPage); // Debug
+
     switch (currentPage) {
       case 'signup':
         return <Signup goTo={() => setCurrentPage('login')} />;
+
       case 'login':
         return <Login goTo={() => setCurrentPage('movieListings')} />;
+
       case 'movieListings':
         console.log('Rendering MovieListings');
         return (
           <MovieListings
-            onSelectMovie={setSelectedMovie}
+            onSelectMovie={(movie) => {
+              setSelectedMovie(movie);
+              setCurrentPage('seatSelection');
+            }}
             goTo={handlePageChange}
           />
         );
+
       case 'seatSelection':
         return (
           <SeatSelection
@@ -39,6 +48,7 @@ function App() {
             goTo={handlePageChange}
           />
         );
+
       case 'ticketConfirmation':
         return (
           <TicketConfirmation
@@ -47,10 +57,13 @@ function App() {
             goTo={handlePageChange}
           />
         );
+
       case 'userReview':
         return <UserReview goTo={handlePageChange} />;
+
       case 'userAccount':
         return <UserAccount goTo={handlePageChange} />;
+
       default:
         return <Signup goTo={() => setCurrentPage('login')} />;
     }
@@ -62,17 +75,25 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Online Movie Ticket Booking</h1>
+
         {showNav && (
           <nav>
-            <button onClick={() => setCurrentPage('movieListings')}>Movies</button>
+            <button
+              onClick={() => {
+                console.log('Movies button clicked');
+                setSelectedMovie(null); // Clear selected movie
+                setCurrentPage('movieListings');
+              }}
+            >
+              Movies
+            </button>
             <button onClick={() => setCurrentPage('userReview')}>Reviews</button>
             <button onClick={() => setCurrentPage('userAccount')}>Account</button>
           </nav>
         )}
       </header>
-      <main>
-        {renderPage()}
-      </main>
+
+      <main>{renderPage()}</main>
     </div>
   );
 }
