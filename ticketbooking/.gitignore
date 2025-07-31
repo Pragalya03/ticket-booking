@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Editor folders
+.vscode/
+.idea/
+
+# Testing
+coverage/
+
+# Local JSON server data (optional)
+*.local.json
